@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hongyusky.web.admin.mapper.UserMapper">
+    <resultMap id="BaseResultMap" type="com.hongyusky.web.admin.model.User" >
+        <result column="userid" property="userid" />
+        <result column="username" property="username" />
+        <result column="mobile" property="mobile" />
+        <result column="password" property="password" />
+        <result column="realname" property="realname" />
+        <result column="smsprice" property="smsprice" />
+        <result column="email" property="email" />
+        <result column="moneyaccount" property="moneyaccount" />
+        <result column="accountnum" property="accountnum" />
+        <result column="company" property="company" />
+        <result column="status" property="status" />
+        <result column="authstatus" property="authstatus" />
+        <result column="taxno" property="taxno" />
+        <result column="province" property="province" />
+        <result column="city" property="city" />
+        <result column="address" property="address" />
+        <result column="contact" property="contact" />
+        <result column="phone" property="phone" />
+        <result column="wx" property="wx" />
+        <result column="license" property="license" />
+        <result column="createdate" property="createdate" />
+        <result column="modifydate" property="modifydate" />
+        <result column="role" property="role" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+                `userid`,
+                `username`,
+                `mobile`,
+                `password`,
+                `realname`,
+                `smsprice`,
+                `email`,
+                `moneyaccount`,
+                `accountnum`,
+                `company`,
+                `status`,
+                `authstatus`,
+                `taxno`,
+                `province`,
+                `city`,
+                `address`,
+                `contact`,
+                `phone`,
+                `wx`,
+                `license`,
+                `createdate`,
+                `modifydate`,
+                `role`
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="false" keyColumn="userid" parameterType="com.hongyusky.web.admin.model.User">
+        INSERT INTO user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test ='null != userid'>
+                `userid`,
+            </if>
+            <if test ='null != username'>
+                `username`,
+            </if>
+            <if test ='null != mobile'>
+                `mobile`,
+            </if>
+            <if test ='null != password'>
+                `password`,
+            </if>
+            <if test ='null != realname'>
+                `realname`,
+            </if>
+            <if test ='null != smsprice'>
+                `smsprice`,
+            </if>
+            <if test ='null != email'>
+                `email`,
+            </if>
+            <if test ='null != moneyaccount'>
+                `moneyaccount`,
+            </if>
+            <if test ='null != accountnum'>
+                `accountnum`,
+            </if>
+            <if test ='null != company'>
+                `company`,
+            </if>
+            <if test ='null != status'>
+                `status`,
+            </if>
+            <if test ='null != authstatus'>
+                `authstatus`,
+            </if>
+            <if test ='null != taxno'>
+                `taxno`,
+            </if>
+            <if test ='null != province'>
+                `province`,
+            </if>
+            <if test ='null != city'>
+                `city`,
+            </if>
+            <if test ='null != address'>
+                `address`,
+            </if>
+            <if test ='null != contact'>
+                `contact`,
+            </if>
+            <if test ='null != phone'>
+                `phone`,
+            </if>
+            <if test ='null != wx'>
+                `wx`,
+            </if>
+            <if test ='null != license'>
+                `license`,
+            </if>
+            <if test ='null != createdate'>
+                `createdate`,
+            </if>
+            <if test ='null != modifydate'>
+                `modifydate`
+            </if>
+            <if test ='null != role'>
+                `role`
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test ='null != userid'>
+                #{userid},
+            </if>
+            <if test ='null != username'>
+                #{username},
+            </if>
+            <if test ='null != mobile'>
+                #{mobile},
+            </if>
+            <if test ='null != password'>
+                #{password},
+            </if>
+            <if test ='null != realname'>
+                #{realname},
+            </if>
+            <if test ='null != smsprice'>
+                #{smsprice},
+            </if>
+            <if test ='null != email'>
+                #{email},
+            </if>
+            <if test ='null != moneyaccount'>
+                #{moneyaccount},
+            </if>
+            <if test ='null != accountnum'>
+                #{accountnum},
+            </if>
+            <if test ='null != company'>
+                #{company},
+            </if>
+            <if test ='null != status'>
+                #{status},
+            </if>
+            <if test ='null != authstatus'>
+                #{authstatus},
+            </if>
+            <if test ='null != taxno'>
+                #{taxno},
+            </if>
+            <if test ='null != province'>
+                #{province},
+            </if>
+            <if test ='null != city'>
+                #{city},
+            </if>
+            <if test ='null != address'>
+                #{address},
+            </if>
+            <if test ='null != contact'>
+                #{contact},
+            </if>
+            <if test ='null != phone'>
+                #{phone},
+            </if>
+            <if test ='null != wx'>
+                #{wx},
+            </if>
+            <if test ='null != license'>
+                #{license},
+            </if>
+            <if test ='null != createdate'>
+                #{createdate},
+            </if>
+            <if test ='null != modifydate'>
+                #{modifydate}
+            </if>
+            <if test ='null != role'>
+                #{role}
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="delete" >
+        DELETE FROM user
+        WHERE `userid` = #{userid}
+    </delete>
+
+    <update id="update" parameterType="com.hongyusky.web.admin.model.User">
+        UPDATE user
+        <set>
+            <if test ='null != username'>username = #{username},</if>
+            <if test ='null != mobile'>mobile = #{mobile},</if>
+            <if test ='null != password'>password = #{password},</if>
+            <if test ='null != realname'>realname = #{realname},</if>
+            <if test ='null != smsprice'>smsprice = #{smsprice},</if>
+            <if test ='null != email'>email = #{email},</if>
+            <if test ='null != moneyaccount'>moneyaccount = #{moneyaccount},</if>
+            <if test ='null != accountnum'>accountnum = #{accountnum},</if>
+            <if test ='null != company'>company = #{company},</if>
+            <if test ='null != status'>status = #{status},</if>
+            <if test ='null != authstatus'>authstatus = #{authstatus},</if>
+            <if test ='null != taxno'>taxno = #{taxno},</if>
+            <if test ='null != province'>province = #{province},</if>
+            <if test ='null != city'>city = #{city},</if>
+            <if test ='null != address'>address = #{address},</if>
+            <if test ='null != contact'>contact = #{contact},</if>
+            <if test ='null != phone'>phone = #{phone},</if>
+            <if test ='null != wx'>wx = #{wx},</if>
+            <if test ='null != license'>license = #{license},</if>
+            <if test ='null != createdate'>createdate = #{createdate},</if>
+            <if test ='null != modifydate'>modifydate = #{modifydate},</if>
+            <if test ='null != role'>role = #{role}</if>
+        </set>
+        WHERE `userid` = #{userid}
+    </update>
+
+
+    <select id="load" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM user
+        WHERE `userid` = #{userid}
+    </select>
+
+    <select id="loadByMobile" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM user
+        WHERE `mobile` = #{mobile}
+    </select>
+
+    <select id="loadByUserName" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM user
+        WHERE `username` = #{userName}
+    </select>
+
+    <select id="pageList" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM user
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="pageListCount" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM user
+    </select>
+</mapper>
