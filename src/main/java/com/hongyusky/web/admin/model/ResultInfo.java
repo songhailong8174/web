@@ -12,6 +12,8 @@ public class ResultInfo implements java.io.Serializable {
     private String msg;
     private Object result;
 
+    public static final Integer OK = 200;
+
     public ResultInfo(Integer code, String msg, Object result) {
         this.code = code;
         this.msg = msg;

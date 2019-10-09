@@ -27,7 +27,7 @@ public class MainTester {
 //		accountQuery();  //通过
 //		registNotice();  //通过
 //		usernameCheck(); //通过
-//		sendSms();    //通过
+		sendSms();    //通过
 //		smsDeliver();  //通过
 //		queryHistorySms();  //通过
 //		queryNerSms(); // 通过
@@ -40,7 +40,7 @@ public class MainTester {
 //		userTemplateApply();  //通过
 //		delUserTemplate();   //通过
 //		autoOpenAccount();  //通过
-		updatePassword();  //通过
+//		updatePassword();  //通过
 //		updateAccount();  //通过
 	}
 	
@@ -161,13 +161,13 @@ public class MainTester {
 	public static void updateAccount(){
 		Map<String,Object> reqInfoDatas = new HashMap<String, Object>();
 		reqInfoDatas.put("userId",userId);
-		reqInfoDatas.put("password", DigestUtils.md5Hex("test"));
-		reqInfoDatas.put("realName", "宋海龙");
-		reqInfoDatas.put("smsPrice",0.01);
-		reqInfoDatas.put("email","song_hailong8174@126.com");
-		reqInfoDatas.put("moneyAccount","宋海龙");
-		reqInfoDatas.put("accountNum","12334345345");
-		reqInfoDatas.put("company", "测试息技术有限公司");
+//		reqInfoDatas.put("password", DigestUtils.md5Hex("test"));
+//		reqInfoDatas.put("realName", "宋海龙");
+//		reqInfoDatas.put("smsPrice",0.01);
+//		reqInfoDatas.put("email","song_hailong8174@126.com");
+//		reqInfoDatas.put("moneyAccount","宋海龙");
+//		reqInfoDatas.put("accountNum","12334345345");
+		reqInfoDatas.put("mobile", "17502515429");
 		ResponseBean sendHttp = sendHttp(10006, userId, null, reqInfoDatas);
 		System.out.println(sendHttp);
 	}
@@ -201,8 +201,8 @@ public class MainTester {
 		reqInfoDatas.put("userId",userId);
 		Page	page = new Page(1,10);
 		//reqInfoDatas.put("content", "【测试】123");
-		reqInfoDatas.put("startTime", "2019-09-18 00:00:00");
-		reqInfoDatas.put("endTime", "2019-09-24 23:00:00");
+		reqInfoDatas.put("startTime", "2019-10-08 00:00:00");
+		reqInfoDatas.put("endTime", "2019-10-08 23:00:00");
 		reqInfoDatas.put("mobiles", "17502515429");
 		ResponseBean sendHttp = sendHttp(50002, userId, page, reqInfoDatas);
 		System.out.println(sendHttp);
@@ -211,9 +211,9 @@ public class MainTester {
 		Map<String,Object> reqInfoDatas = new HashMap<String, Object>();
 		reqInfoDatas.put("userId",userId);
 		Page	page = new Page(1,10);
-		reqInfoDatas.put("content", "【测试】测试发送");
-		reqInfoDatas.put("startTime", "2019-09-20 00:00:00");
-		reqInfoDatas.put("endTime", "2019-09-20 15:33:00");
+//		reqInfoDatas.put("content", "【测试】测试发送");
+		reqInfoDatas.put("startTime", "2019-10-08 00:00:00");
+		reqInfoDatas.put("endTime", "2019-10-08 22:00:00");
 		reqInfoDatas.put("mobiles", "17502515429");
 		ResponseBean sendHttp = sendHttp(50003, userId, page, reqInfoDatas);
 		System.out.println(sendHttp);

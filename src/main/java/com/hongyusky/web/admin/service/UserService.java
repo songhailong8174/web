@@ -48,9 +48,14 @@ public class UserService {
         }
 
         String token = generateToken(user);
-        CookieUtils.setCookie(response, "token", token);
+        CookieUtils.setCookie(response, "token", token, -1);
 
         return ResultInfo.getSuccessInfo(token);
+    }
+
+    public ResultInfo logout(HttpServletResponse response){
+        CookieUtils.setCookie(response, "token", null, 0);
+        return ResultInfo.getSuccessInfo();
     }
 
     private String generateToken(User user){
@@ -133,6 +138,25 @@ public class UserService {
         user.setMobile(null);
         user.setUserid(dbUser.getUserid());
         user.setPassword(DigestUtils.md5Hex(user.getPassword()));
+        user.setModifydate(new Date());
+        userMapper.update(user);
+        this.modifyRemotePassword(user, dbUser.getPassword());
+        return ResultInfo.getSuccessInfo();
+    }
+
+    public ResultInfo modifyPassword(User user, String userId){
+        User dbUser = userMapper.load(userId);
+        if(dbUser == null){
+            return ResultInfo.getFailInfo(ResultEnum.USER_NOT_EXISTS);
+        }
+        if(!dbUser.getPassword().equals(user.getPassword())){
+            return ResultInfo.getFailInfo(ResultEnum.USER_OLD_PASSWORD_ERR);
+        }
+        user.setPassword(user.getRealname());
+        user.setRealname(null);
+        user.setCompany(null);
+        user.setModifydate(new Date());
+        user.setUserid(userId);
         userMapper.update(user);
         this.modifyRemotePassword(user, dbUser.getPassword());
         return ResultInfo.getSuccessInfo();
@@ -156,16 +180,65 @@ public class UserService {
         return ResultInfo.getFailInfo();
     }
 
+    public ResultInfo modifyMobile(User user) {
+        if(!redisUtils.hasKey(user.getMobile())){
+            return ResultInfo.getFailInfo(ResultEnum.USER_CODE_ERR);
+        }
+        String code = String.valueOf(redisUtils.get(user.getMobile()));
+        if(!code.equals(user.getRealname())){
+            return ResultInfo.getFailInfo(ResultEnum.USER_CODE_ERR);
+        }
+        User dbUser = userMapper.load(user.getUserid());
+        if(!dbUser.getMobile().equals(user.getMobile())){
+            return ResultInfo.getFailInfo(ResultEnum.USER_MOBILE_ERROR);
+        }
+        if(userMapper.loadByMobile(user.getCompany()) != null){
+            return ResultInfo.getFailInfo(ResultEnum.USER_MOBILE_EXISTS);
+        }
+        user.setMobile(user.getCompany());
+        user.setModifydate(new Date());
+        ResultInfo resultInfo = modifyRemoteMobile(user.getUserid(), user.getMobile());
+        if(resultInfo.getCode() == ResultInfo.OK){
+            userMapper.update(user);
+        } else {
+            return resultInfo;
+        }
+        return ResultInfo.getSuccessInfo();
+    }
+
+    private ResultInfo modifyRemoteMobile(String userId, String mobile){
+        Map<String,Object> reqInfoDatas = new HashMap<String, Object>();
+        reqInfoDatas.put("userId",userId);
+        reqInfoDatas.put("mobile", mobile);
+        ResponseBean responseBean = HttpUtils.sendHttp(10006, userId, null, reqInfoDatas);
+        if(responseBean.isSuccess()){
+            Map<String, Object> dataMap = responseBean.getDataMap();
+            boolean flag = (Boolean) dataMap.get("isSuccess");
+            if(flag){
+                return ResultInfo.getSuccessInfo();
+            }
+            return ResultInfo.getFailInfo(ResultEnum.REMOTE_REQUEST_ERR.getCode(), dataMap.get("msg").toString());
+        }
+
+        return ResultInfo.getFailInfo(ResultEnum.REMOTE_REQUEST_ERR.getCode(), "resultCode:" + responseBean.getResultCode() + "," + responseBean.getResultMsg());
+    }
+
 
 
     /**
      *
      */
-    public void deleteUser(){
-
+    public ResultInfo modifyBaseInfo(String email, String street, String userId){
+        User user = new User();
+        user.setUserid(userId);
+        user.setEmail(email);
+        user.setAddress(street);
+        user.setModifydate(new Date());
+        userMapper.update(user);
+        return ResultInfo.getSuccessInfo();
     }
 
-    public ResultInfo getValidCode(String mobile) {
+    public ResultInfo getValidCode(String userId, String mobile) {
         if(StringUtils.isEmpty(mobile)){
             return ResultInfo.getFailInfo(ResultEnum.USER_MOBILE_EMPTY);
         }
@@ -174,7 +247,22 @@ public class UserService {
         }
         String code = StringUtil.getValidCode();
         boolean flag = redisUtils.set(mobile, code, 300);
-        return flag ? ResultInfo.getSuccessInfo(code) : ResultInfo.getFailInfo();
+        Map<String,Object> reqInfoDatas = new HashMap<String, Object>();
+//		reqInfoDatas.put("userId",userId);
+        reqInfoDatas.put("mobiles", mobile);
+        reqInfoDatas.put("content", "【测试】验证码 " + code);
+//		reqInfoDatas.put("setTime", "2019-09-18 15:00:00");
+//		reqInfoDatas.put("srcNum", "123456");
+        ResponseBean responseBean = HttpUtils.sendHttp(30001, userId, null, reqInfoDatas);
+        System.out.println(responseBean);
+        if(responseBean.isSuccess()){
+            Map dataMap = responseBean.getDataMap();
+            if((Boolean) dataMap.get("isSuccess")){
+                return ResultInfo.getSuccessInfo();
+            }
+            return ResultInfo.getFailInfo(ResultEnum.REMOTE_REQUEST_ERR.getCode(), dataMap.get("msg").toString());
+        }
+        return ResultInfo.getFailInfo(333, "获取验证码错误");
     }
 
     public ResultInfo loadUserById(String userId) {
@@ -183,5 +271,15 @@ public class UserService {
             return ResultInfo.getFailInfo(ResultEnum.USER_NOT_EXISTS);
         }
         return ResultInfo.getSuccessInfo(user);
+    }
+
+    public User loadUser(String userId){
+       return userMapper.load(userId);
+    }
+
+    public ResultInfo auth(User user){
+        user.setModifydate(new Date());
+        userMapper.update(user);
+        return ResultInfo.getSuccessInfo();
     }
 }

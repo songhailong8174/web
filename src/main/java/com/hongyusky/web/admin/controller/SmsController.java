@@ -1,6 +1,14 @@
 package com.hongyusky.web.admin.controller;
 
+import com.hongyusky.web.admin.annotation.UserLoginToken;
 import com.hongyusky.web.admin.model.ResultInfo;
+import com.hongyusky.web.admin.model.Template;
+import com.hongyusky.web.admin.service.SmsService;
+import com.hongyusky.web.admin.status.ResultEnum;
+import com.hongyusky.web.admin.util.StringUtil;
+import com.hongyusky.web.admin.util.TokenUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,54 +23,43 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/sms")
 public class SmsController {
 
-    @RequestMapping(value = "/sign", method = RequestMethod.POST)
-    public ResultInfo addSign(String name){
-        return ResultInfo.getSuccessInfo();
-    }
-
-    @RequestMapping(value = "/sign/{id}", method = RequestMethod.DELETE)
-    public ResultInfo deleteSign(@PathVariable("id") Long id){
-        return ResultInfo.getSuccessInfo();
-    }
-
-    @RequestMapping(value = "/sign/{id}", method = RequestMethod.POST)
-    public ResultInfo modifySign(@PathVariable("id") Long id, String name){
-        return ResultInfo.getSuccessInfo();
-    }
-
-    @RequestMapping(value = "/sign", method = RequestMethod.GET)
-    public ResultInfo loadSign(int page, int pageSize){
-        return ResultInfo.getSuccessInfo();
-    }
-
-    @RequestMapping(value = "/sign/{id}", method = RequestMethod.GET)
-    public ResultInfo loadSign(@PathVariable("id") Long id){
-        return ResultInfo.getSuccessInfo();
-    }
+    @Autowired
+    SmsService smsService;
 
     @RequestMapping(value = "/template", method = RequestMethod.POST)
-    public ResultInfo addTemplate(String name){
-        return ResultInfo.getSuccessInfo();
+    @UserLoginToken
+    public ResultInfo addTemplate(Template template){
+        String userId = TokenUtils.getTokenUserId();
+        if(userId == null){
+            return ResultInfo.getFailInfo(ResultEnum.NEED_LOGIN);
+        }
+        return smsService.addTemplate(template, userId);
     }
 
-    @RequestMapping(value = "/template/{id}", method = RequestMethod.DELETE)
-    public ResultInfo deleteTemplate(@PathVariable("id") Long id){
-        return ResultInfo.getSuccessInfo();
-    }
-
-    @RequestMapping(value = "/template/{id}", method = RequestMethod.POST)
-    public ResultInfo modifyTemplate(@PathVariable("id") Long id, String name){
-        return ResultInfo.getSuccessInfo();
+    @RequestMapping(value = "/template/delete", method = RequestMethod.GET)
+    @UserLoginToken
+    public ResultInfo deleteTemplate(String id){
+        String userId = TokenUtils.getTokenUserId();
+        if(userId == null){
+            return ResultInfo.getFailInfo(ResultEnum.NEED_LOGIN);
+        }
+        if(StringUtils.isEmpty(id)) {
+            return ResultInfo.getFailInfo(ResultEnum.SMS_TMPLATE_EMPTY);
+        }
+        return smsService.deleteTemplate(userId, id);
     }
 
     @RequestMapping(value = "/template", method = RequestMethod.GET)
-    public ResultInfo loadTemplate(int page, int pageSize){
-        return ResultInfo.getSuccessInfo();
-    }
-
-    @RequestMapping(value = "/template/{id}", method = RequestMethod.GET)
-    public ResultInfo loadTemplate(@PathVariable("id") Long id){
-        return ResultInfo.getSuccessInfo();
+    @UserLoginToken
+    public ResultInfo loadTemplate(String currentPage, String pageSize, String startDay, String endDay, String status)
+    {
+        String userId = TokenUtils.getTokenUserId();
+        if(userId == null){
+            return ResultInfo.getFailInfo(ResultEnum.NEED_LOGIN);
+        }
+        int pageIndex = StringUtils.isNotEmpty(currentPage) ? Integer.valueOf(currentPage) : 1;
+        int _pageSize = StringUtils.isNotEmpty(pageSize) ? Integer.valueOf(pageSize) : 10;
+        return smsService.getTemplates(userId, pageIndex, _pageSize, startDay, endDay, status);
     }
 
     @RequestMapping(value = "/template/notice", method = RequestMethod.POST)

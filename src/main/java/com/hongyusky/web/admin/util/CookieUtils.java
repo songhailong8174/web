@@ -24,10 +24,10 @@ public class CookieUtils {
         return null;
     }
 
-    public static void setCookie(HttpServletResponse response, String cookieName, String value){
+    public static void setCookie(HttpServletResponse response, String cookieName, String value, int maxAge){
         Cookie cookie = new Cookie(cookieName,value);
         cookie.setPath("/");
-//        cookie.setMaxAge(3600);
+        cookie.setMaxAge(maxAge);
         response.addCookie(cookie);
     }
 }
