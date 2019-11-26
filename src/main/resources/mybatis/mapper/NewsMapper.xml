@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hongyusky.web.admin.mapper.NewsMapper">
+    <resultMap id="BaseResultMap" type="com.hongyusky.web.admin.model.News" >
+        <result column="id" property="id" />
+        <result column="title" property="title" />
+        <result column="introduce" property="introduce" />
+        <result column="content" property="content" />
+        <result column="img" property="img" />
+        <result column="status" property="status" />
+        <result column="createTime" property="createTime" />
+        <result column="publishTime" property="publishTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+                `id`,
+                `title`,
+                `introduce`,
+                `content`,
+                `status`,
+                `createTime`,
+                `publishTime`,
+                `img`
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="false" keyColumn="id" parameterType="com.hongyusky.web.admin.model.News">
+        INSERT INTO news
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test ='null != title'>
+                `title`,
+            </if>
+            <if test ='null != introduce'>
+                `introduce`,
+            </if>
+            <if test ='null != content'>
+                `content`,
+            </if>
+            <if test ='null != img'>
+                `img`,
+            </if>
+            <if test ='null != status'>
+                `status`,
+            </if>
+            <if test ='null != createTime'>
+                `createTime`,
+            </if>
+            <if test ='null != publishTime'>
+                `publishTime`
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test ='null != title'>
+                #{title},
+            </if>
+            <if test ='null != introduce'>
+                #{introduce},
+            </if>
+            <if test ='null != content'>
+                #{content},
+            </if>
+            <if test ='null != img'>
+                #{img},
+            </if>
+            <if test ='null != status'>
+                #{status},
+            </if>
+            <if test ='null != createTime'>
+                #{createTime},
+            </if>
+            <if test ='null != publishTime'>
+                #{publishTime}
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="delete" >
+        DELETE FROM news
+        WHERE `id` = #{id}
+    </delete>
+
+    <update id="update" parameterType="com.hongyusky.web.admin.model.News">
+        UPDATE news
+        <set>
+            <if test ='null != title'>title = #{title},</if>
+            <if test ='null != content'>content = #{content},</if>
+            <if test ='null != img'>img = #{img},</if>
+            <if test ='null != status'>status = #{status},</if>
+            <if test ='null != introduce'>introduce = #{introduce},</if>
+            publishTime = #{publishTime}
+        </set>
+        WHERE `id` = #{id}
+    </update>
+
+
+    <select id="load" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM news
+        WHERE `id` = #{id}
+    </select>
+
+    <select id="loadNews" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM news
+        WHERE `id` = #{id} and `status` = 1
+    </select>
+
+
+    <select id="pageList" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM news
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="pageListCount" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM news
+    </select>
+
+    <select id="newsList" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM news
+        WHERE `status` = 1
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="newsListCount" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM news
+        WHERE `status` = 1
+    </select>
+
+</mapper>

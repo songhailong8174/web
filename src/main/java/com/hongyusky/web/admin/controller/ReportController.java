@@ -12,6 +12,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @Author: songhailong
  * @Description:
@@ -26,8 +31,18 @@ public class ReportController {
     ReportService reportService;
 
     @RequestMapping(value = "/sedingCount", method = RequestMethod.GET)
-    public ResultInfo sendingCount(){
-        return ResultInfo.getSuccessInfo();
+    public ResultInfo sendingCount(String startDay, String endDay){
+        String userId = TokenUtils.getTokenUserId();
+        if(userId == null){
+            return ResultInfo.getFailInfo(ResultEnum.NEED_LOGIN);
+        }
+//        List<Map<String, Integer>> list = new ArrayList<>();
+//        Map<String, Integer> map = new HashMap<>();
+//        map.put("sendState", 4);
+//        map.put("smsCount", 3);
+//        list.add(map);
+//        return ResultInfo.getSuccessInfo(list);
+        return reportService.sendCount(userId, startDay, endDay);
     }
 
     @RequestMapping(value = "/history/near", method = RequestMethod.GET)
@@ -65,4 +80,5 @@ public class ReportController {
         int _pageSize = StringUtils.isNotEmpty(pageSize) ? Integer.valueOf(pageSize) : 10;
         return reportService.receiveHistory(userId, pageIndex, _pageSize, startDay, endDay, content, smscontent);
     }
+
 }

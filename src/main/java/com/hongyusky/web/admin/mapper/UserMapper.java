@@ -43,6 +43,8 @@ public interface UserMapper {
      **/
     User load(@Param("userid") String userid);
 
+    User loadSysUser();
+
     User loadByUserName(@Param("userName") String userName);
 
     User loadByMobile(@Param("mobile") String mobile);
@@ -53,7 +55,12 @@ public interface UserMapper {
      * @date 2019/09/26
      **/
     List<User> pageList(@Param("offset") int offset,
-                        @Param("pagesize") int pagesize);
+                        @Param("pageSize") int pageSize,
+                        @Param("username") String username,
+                        @Param("mobile") String mobile,
+                        @Param("company") String company,
+                        @Param("authstatus") String authstatus
+    );
 
     /**
      * [查詢] 分頁查詢 count
@@ -61,5 +68,10 @@ public interface UserMapper {
      * @date 2019/09/26
      **/
     int pageListCount(@Param("offset") int offset,
-                      @Param("pagesize") int pagesize);
+                      @Param("pageSize") int pagesize,
+                      @Param("username") String username,
+                      @Param("mobile") String mobile,
+                      @Param("company") String company,
+                      @Param("authstatus") String authstatus
+    );
 }

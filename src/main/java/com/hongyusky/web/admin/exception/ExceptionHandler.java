@@ -30,7 +30,7 @@ public class ExceptionHandler {
     @ResponseBody
     public ResultInfo handleException(HttpServletRequest request, Exception ex) {
 //        log.error("exception error:{}",ex);
-        return ResultInfo.getFailInfo(ResultEnum.UNDEFINE);
+        return ResultInfo.getFailInfo(ResultEnum.UNDEFINE.getCode(), ex.getMessage());
     }
 
 }

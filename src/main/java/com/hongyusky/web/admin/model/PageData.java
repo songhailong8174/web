@@ -31,6 +31,14 @@ public class PageData implements java.io.Serializable {
         return new PageData(list, pagination);
     }
 
+    public static PageData buildResult(Object list, int rowCount, int pageIndex, int pageSize){
+        Pagination pagination = new Pagination(
+                pageIndex,
+                pageSize,
+                rowCount);
+        return new PageData(list, pagination);
+    }
+
     public Object getList() {
         return list;
     }

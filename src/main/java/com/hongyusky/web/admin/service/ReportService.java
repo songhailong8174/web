@@ -88,4 +88,18 @@ public class ReportService {
         }
         return ResultInfo.getFailInfo(ResultEnum.REMOTE_REQUEST_ERR.getCode(), responseBean.getResultMsg());
     }
+
+    public ResultInfo sendCount(String userId, String startTime, String endTime){
+        Map<String,Object> reqInfoDatas = new HashMap<String, Object>();
+        reqInfoDatas.put("userId",userId);
+        reqInfoDatas.put("startDay", startTime);
+        reqInfoDatas.put("endDay", endTime);
+        ResponseBean responseBean = HttpUtils.sendHttp(50004, userId, null, reqInfoDatas);
+        System.out.println(responseBean);
+        if(responseBean.isSuccess()){
+            Map<String, Object> dataMap = responseBean.getDataMap();
+            return ResultInfo.getSuccessInfo(dataMap.get("list"));
+        }
+        return ResultInfo.getFailInfo(responseBean.getResultCode(), responseBean.getResultMsg());
+    }
 }

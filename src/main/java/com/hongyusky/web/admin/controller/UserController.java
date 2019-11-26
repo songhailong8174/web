@@ -5,6 +5,7 @@ import com.hongyusky.web.admin.model.ResultInfo;
 import com.hongyusky.web.admin.model.User;
 import com.hongyusky.web.admin.service.UserService;
 import com.hongyusky.web.admin.status.ResultEnum;
+import com.hongyusky.web.admin.status.SysContant;
 import com.hongyusky.web.admin.util.QrCodeUtils;
 import com.hongyusky.web.admin.util.StringUtil;
 import com.hongyusky.web.admin.util.TokenUtils;
@@ -63,7 +64,20 @@ public class UserController {
             return ResultInfo.getFailInfo(ResultEnum.USER_MOBILE_ERR);
         }
         String userId = TokenUtils.getTokenUserId();
+        if (StringUtils.isEmpty(userId)) {
+            userId = SysContant.DEFAULT_USER;
+        }
         return userService.getValidCode(userId, mobile);
+    }
+
+    @RequestMapping(value = "/check", method = RequestMethod.GET)
+    public ResultInfo checkUserName(String userName) {
+        //参数非空校验
+        //手机号格式校验
+        if(StringUtils.isEmpty(userName)){
+            ResultInfo.getFailInfo(ResultEnum.USER_NAME_EMPTY);
+        }
+        return userService.checkUserName(userName);
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
@@ -120,6 +134,15 @@ public class UserController {
     @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
     public ResultInfo loadUser(@PathVariable("id") Long id) {
         return ResultInfo.getSuccessInfo();
+    }
+
+    @RequestMapping(value = "/info", method = RequestMethod.GET)
+    public ResultInfo getAccountInfo() {
+        String userId = TokenUtils.getTokenUserId();
+        if(userId == null){
+            return ResultInfo.getFailInfo(ResultEnum.NEED_LOGIN);
+        }
+        return userService.getAccountInfo(userId);
     }
 
     @RequestMapping(value = "/user/modify", method = RequestMethod.POST)
@@ -225,6 +248,28 @@ public class UserController {
         }
         user.setUserid(userId);
         return userService.auth(user);
+    }
+
+    @GetMapping(value = "/list")
+    @UserLoginToken
+    public ResultInfo getusersList(String currentPage, String pageSize, String username, String mobile, String company, String authstatus) {
+        String userId = TokenUtils.getTokenUserId();
+        if(userId == null){
+            return ResultInfo.getFailInfo(ResultEnum.NEED_LOGIN);
+        }
+        int pageIndex = StringUtils.isNotEmpty(currentPage) ? Integer.valueOf(currentPage) : 0;
+        int _pageSize = StringUtils.isNotEmpty(pageSize) ? Integer.valueOf(pageSize) : 10;
+        return userService.getUsersList(pageIndex, _pageSize, username, mobile, company, authstatus);
+    }
+
+    @PostMapping(value = "/appove")
+    @UserLoginToken
+    public ResultInfo appove (String id) {
+        String userId = TokenUtils.getTokenUserId();
+        if(userId == null){
+            return ResultInfo.getFailInfo(ResultEnum.NEED_LOGIN);
+        }
+        return userService.appove(id);
     }
 
     @RequestMapping(value = "/user/qrcode", method = RequestMethod.GET)

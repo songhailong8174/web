@@ -25,6 +25,8 @@
         <result column="createdate" property="createdate" />
         <result column="modifydate" property="modifydate" />
         <result column="role" property="role" />
+        <result column="provincename" property="provincename" />
+        <result column="cityname" property="cityname" />
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -32,6 +34,31 @@
                 `username`,
                 `mobile`,
                 `password`,
+                `realname`,
+                `smsprice`,
+                `email`,
+                `moneyaccount`,
+                `accountnum`,
+                `company`,
+                `status`,
+                `authstatus`,
+                `taxno`,
+                `province`,
+                `city`,
+                `address`,
+                `contact`,
+                `phone`,
+                `wx`,
+                `license`,
+                `createdate`,
+                `modifydate`,
+                `role`
+    </sql>
+
+    <sql id="Base_Column_List1">
+                `userid`,
+                `username`,
+                `mobile`,
                 `realname`,
                 `smsprice`,
                 `email`,
@@ -240,6 +267,12 @@
         WHERE `userid` = #{userid}
     </select>
 
+    <select id="loadSysUser" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM user
+        WHERE `role` = 2
+    </select>
+
     <select id="loadByMobile" resultMap="BaseResultMap">
         SELECT <include refid="Base_Column_List" />
         FROM user
@@ -253,13 +286,65 @@
     </select>
 
     <select id="pageList" resultMap="BaseResultMap">
-        SELECT <include refid="Base_Column_List" />
-        FROM user
+        SELECT
+            u.`userid`,
+            u.`username`,
+            u.`mobile`,
+            u.`realname`,
+            u.`smsprice`,
+            u.`email`,
+            u.`moneyaccount`,
+            u.`accountnum`,
+            u.`company`,
+            u.`status`,
+            u.`authstatus`,
+            u.`taxno`,
+            u.`province`,
+            u.`city`,
+            u.`address`,
+            u.`contact`,
+            u.`phone`,
+            u.`wx`,
+            u.`license`,
+            u.`createdate`,
+            u.`modifydate`,
+            u.`role`,
+            p.name as provicename,
+            c.name as cityname
+        FROM user u
+        left join province p on p.id = u.province
+        left join city c on c.id = u.city
+        where u.role = 0
+        <if test="username != null and username != ''">
+            and u.username =#{username}
+        </if>
+        <if test="mobile != null and mobile != ''">
+            and u.mobile =#{mobile}
+        </if>
+        <if test="company != null and company != ''">
+            and u.company = #{company}
+        </if>
+        <if test="authstatus != null and authstatus != ''">
+            and u.authstatus=#{authstatus}
+        </if>
         LIMIT #{offset}, #{pageSize}
     </select>
 
     <select id="pageListCount" resultType="java.lang.Integer">
         SELECT count(1)
-        FROM user
+        FROM user u
+        where u.role = 0
+        <if test="username != null and username != ''">
+            and u.username =#{username}
+        </if>
+        <if test="mobile != null and mobile != ''">
+            and u.mobile =#{mobile}
+        </if>
+        <if test="company != null and company != ''">
+            and u.company = #{company}
+        </if>
+        <if test="authstatus != null and authstatus != ''">
+            and u.authstatus=#{authstatus}
+        </if>
     </select>
 </mapper>

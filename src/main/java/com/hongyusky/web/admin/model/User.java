@@ -127,6 +127,10 @@ public class User implements Serializable {
      */
     private int role;
 
+    private String provicename;
+
+    private String cityname;
+
 
     public User() {
     }
@@ -313,5 +317,21 @@ public class User implements Serializable {
 
     public void setRole(int role) {
         this.role = role;
+    }
+
+    public String getProvicename() {
+        return provicename;
+    }
+
+    public void setProvicename(String provicename) {
+        this.provicename = provicename;
+    }
+
+    public String getCityname() {
+        return cityname;
+    }
+
+    public void setCityname(String cityname) {
+        this.cityname = cityname;
     }
 }

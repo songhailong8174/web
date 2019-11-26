@@ -22,27 +22,27 @@ public class MainTester {
 	public static String requestUrl="http://122.96.149.114:8044/service/process";
 	public static String userId="e54401e16f304253bc4d3002f7780025";
 	public static String templateId = "9f2a474d9cfa41f7b7402d9aee1c363c";
-	public static void main(String[] args) {
-//		System.out.println(UUID.randomUUID().toString().replace("-", ""));
+//	public static void main(String[] args) {
+////		System.out.println(UUID.randomUUID().toString().replace("-", ""));
 //		accountQuery();  //通过
 //		registNotice();  //通过
-//		usernameCheck(); //通过
-		sendSms();    //通过
-//		smsDeliver();  //通过
-//		queryHistorySms();  //通过
-//		queryNerSms(); // 通过
-//		statSms();   //通过
-//		statDaySms();  //通过
-//		recharge();  //通过
-//		faildReturn();  //通过
-//		costDetail();   //通过
-//		queryUserTemplates();  //通过
-//		userTemplateApply();  //通过
-//		delUserTemplate();   //通过
-//		autoOpenAccount();  //通过
-//		updatePassword();  //通过
-//		updateAccount();  //通过
-	}
+////		usernameCheck(); //通过
+//		sendSms();    //通过
+////		smsDeliver();  //通过
+////		queryHistorySms();  //通过
+////		queryNerSms(); // 通过
+////		statSms();   //通过
+////		statDaySms();  //通过
+////		recharge();  //通过
+////		faildReturn();  //通过
+////		costDetail();   //通过
+////		queryUserTemplates();  //通过
+////		userTemplateApply();  //通过
+////		delUserTemplate();   //通过
+////		autoOpenAccount();  //通过
+////		updatePassword();  //通过
+////		updateAccount();  //通过
+//}
 	
 	/***
 	 * 发送http请求
