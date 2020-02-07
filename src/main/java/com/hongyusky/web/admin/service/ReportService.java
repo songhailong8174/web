@@ -26,8 +26,8 @@ public class ReportService {
         Page page = new Page(pageIndex, pageSize);
         //reqInfoDatas.put("content", "【测试】123");
         if(StringUtils.isNotEmpty(startTime) && StringUtils.isNotEmpty(endTime)){
-            reqInfoDatas.put("startDay", startTime + " 00：00：00");
-            reqInfoDatas.put("endDay", endTime + " 23：59：59");
+            reqInfoDatas.put("startTime", startTime + " 00：00：00");
+            reqInfoDatas.put("endTime", endTime + " 23：59：59");
         }
         if(StringUtils.isNotEmpty(content)){
             reqInfoDatas.put("content", content);

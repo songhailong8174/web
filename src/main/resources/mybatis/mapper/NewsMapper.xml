@@ -120,6 +120,7 @@
         SELECT <include refid="Base_Column_List" />
         FROM news
         WHERE `status` = 1
+        ORDER BY publishTime DESC
         LIMIT #{offset}, #{pageSize}
     </select>
 
