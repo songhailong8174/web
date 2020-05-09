@@ -19,7 +19,7 @@ import java.util.Map;
 public class HttpUtils {
 
     public static final Charset charset = Charset.forName("UTF-8");
-    public static String requestUrl="http://122.96.149.114:8044/service/process";
+    public static String requestUrl="http://221.130.30.188:8022/service/process";
     public static String userId="b4bd4e3bf6fc4d41af339c4a942a3a1a";
 
     /***
