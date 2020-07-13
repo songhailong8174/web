@@ -1,6 +1,7 @@
 package com.hongyusky.web.admin.controller;
 
 import com.hongyusky.web.admin.annotation.UserLoginToken;
+import com.hongyusky.web.admin.model.ApplyInfo;
 import com.hongyusky.web.admin.model.ResultInfo;
 import com.hongyusky.web.admin.model.User;
 import com.hongyusky.web.admin.service.UserService;
@@ -80,6 +81,38 @@ public class UserController {
         return userService.checkUserName(userName);
     }
 
+    @GetMapping(value = "/getImg")
+    public ResultInfo getImg(String id) {
+        return userService.getImageCode(id);
+    }
+
+    @RequestMapping(value = "/sendCode", method = RequestMethod.GET)
+    public ResultInfo sendCode(String mobile, String code, String id) {
+        //参数非空校验
+        //手机号格式校验
+        if(StringUtils.isEmpty(id) || StringUtils.isEmpty(code)) {
+            return ResultInfo.getFailInfo(ResultEnum.IMG_CODE_EMPTY);
+        }
+        if(StringUtils.isEmpty(mobile)){
+            return ResultInfo.getFailInfo(ResultEnum.USER_MOBILE_EMPTY);
+        }
+        if(!StringUtil.isMobile(mobile)){
+            return ResultInfo.getFailInfo(ResultEnum.USER_MOBILE_ERR);
+        }
+        String userId = TokenUtils.getTokenUserId();
+        if (StringUtils.isEmpty(userId)) {
+            userId = SysContant.DEFAULT_USER;
+        }
+        return userService.getValidCode(userId, mobile, id, code);
+    }
+
+
+    @RequestMapping(value = "/reg", method = RequestMethod.POST)
+    public ResultInfo reg(ApplyInfo applyInfo) {
+        // 校验参数完整性
+        return userService.addApplyInfo(applyInfo);
+    }
+
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ResultInfo register(User user) {
         if(user == null){
@@ -88,6 +121,12 @@ public class UserController {
         System.out.println(user.getUsername());
         if(StringUtils.isEmpty(user.getUsername())){
             return ResultInfo.getFailInfo(ResultEnum.USER_NAME_EMPTY);
+        }
+        if(StringUtils.isEmpty(user.getContact())) {
+            return ResultInfo.getFailInfo(ResultEnum.USER_CONTACT_EMPTY);
+        }
+        if(StringUtils.isEmpty(user.getEmail())) {
+            return ResultInfo.getFailInfo(ResultEnum.USER_INFO_EMAIL_EMPTY);
         }
         if(StringUtils.isEmpty(user.getMobile())){
             return ResultInfo.getFailInfo(ResultEnum.USER_MOBILE_EMPTY);

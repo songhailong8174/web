@@ -46,6 +46,10 @@ public enum ResultEnum {
 
     SMS_TMPLATE_EMPTY(401, "短信模版为空"),
 
+    GET_IMG_CODE( 402, "获取验证码错误"),
+    IMG_CODE_EMPTY(403, "请输入图形验证码"),
+    IMG_CODE_ERR(404, "图形验证码错误"),
+
 
     REMOTE_REQUEST_ERR(-3, "调用远程方法错误"),
     PARAM_ERR(-2, "参数错误"),

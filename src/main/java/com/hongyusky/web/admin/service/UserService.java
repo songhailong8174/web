@@ -2,13 +2,12 @@ package com.hongyusky.web.admin.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.hongyusky.web.admin.mapper.ApplyInfoMapper;
 import com.hongyusky.web.admin.mapper.UserMapper;
 import com.hongyusky.web.admin.model.*;
 import com.hongyusky.web.admin.status.ResultEnum;;
-import com.hongyusky.web.admin.util.CookieUtils;
-import com.hongyusky.web.admin.util.HttpUtils;
-import com.hongyusky.web.admin.util.RedisUtils;
-import com.hongyusky.web.admin.util.StringUtil;
+import com.hongyusky.web.admin.status.SysContant;
+import com.hongyusky.web.admin.util.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +28,8 @@ public class UserService {
 
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private ApplyInfoMapper applyInfoMapper;
     @Autowired
     private RedisUtils redisUtils;
 
@@ -84,6 +85,56 @@ public class UserService {
     public ResultInfo checkUserName (String userName) {
         boolean flag = this.checkRemoteUserName(userName);
         return flag ? ResultInfo.getFailInfo(ResultEnum.USER_EXISTS) : ResultInfo.getSuccessInfo();
+    }
+
+    public ResultInfo addApplyInfo (ApplyInfo applyInfo) {
+        // 校验数据完整性
+        // 插入数据
+        // 发送注册短信，使用系统默认账户
+        if(!redisUtils.hasKey(applyInfo.getMobile())){
+            return ResultInfo.getFailInfo(ResultEnum.USER_CODE_ERR);
+        }
+        String code = String.valueOf(redisUtils.get(applyInfo.getMobile()));
+        if(!code.equals(applyInfo.getCode())){
+            return ResultInfo.getFailInfo(ResultEnum.USER_CODE_ERR);
+        }
+        applyInfo.setCreatetime(new Date());
+        applyInfoMapper.insert(applyInfo);
+        this.sendNotice(applyInfo);
+        return ResultInfo.getSuccessInfo();
+    }
+
+    private void sendNotice(ApplyInfo applyInfo) {
+        User sysUser = userMapper.loadSysUser();
+        String userId = "";
+        if (sysUser != null) {
+            userId = sysUser.getUserid();
+        }
+        if(StringUtils.isEmpty(userId)) {
+            return;
+        }
+        Map<String,Object> reqInfoDatas = new HashMap<String, Object>();
+        reqInfoDatas.put("mobiles", "13082550559");
+        reqInfoDatas.put("content", "【南京睿宏无限】官网有新客户提交了服务申请，联系人为" + applyInfo.getName() + "，手机号码为" + applyInfo.getMobile() + "，邮箱为" + applyInfo.getEmail() + "，申请服务为" + applyInfo.getServices() + "，请尽快处理。 ");
+        ResponseBean responseBean = HttpUtils.sendHttp(30001, userId, null, reqInfoDatas);
+        System.out.println(responseBean);
+    }
+
+    public ResultInfo getImageCode (String preId) {
+        try {
+            if (StringUtils.isNotEmpty(preId) && redisUtils.hasKey(preId)) {
+                redisUtils.del(preId);
+            }
+            Map<String, String> map = CodeUtil.generateCodeAndPic();
+            Map<String, String> codeMap = new HashMap<String, String>();
+            codeMap.put("id", UUID.randomUUID().toString());
+            codeMap.put("img", map.get("pic"));
+            redisUtils.set(codeMap.get("id"), map.get("code"), 300);
+            return ResultInfo.getSuccessInfo(codeMap);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResultInfo.getFailInfo(ResultEnum.GET_IMG_CODE);
+        }
     }
 
     /**
@@ -259,6 +310,45 @@ public class UserService {
     }
 
     public ResultInfo getValidCode(String userId, String mobile) {
+        if(StringUtils.isEmpty(mobile)){
+            return ResultInfo.getFailInfo(ResultEnum.USER_MOBILE_EMPTY);
+        }
+        if(!StringUtil.isMobile(mobile)){
+            return ResultInfo.getFailInfo(ResultEnum.USER_MOBILE_ERR);
+        }
+        User user = userMapper.load(userId);
+        if (user.getAuthstatus() != 1) {
+            User sysUser = userMapper.loadSysUser();
+            if (sysUser != null) {
+                userId = sysUser.getUserid();
+            }
+        }
+        String code = StringUtil.getValidCode();
+        boolean flag = redisUtils.set(mobile, code, 300);
+        Map<String,Object> reqInfoDatas = new HashMap<String, Object>();
+//		reqInfoDatas.put("userId",userId);
+        reqInfoDatas.put("mobiles", mobile);
+        reqInfoDatas.put("content", "【南京睿宏无限】您的短信验证码为： " + code);
+//		reqInfoDatas.put("setTime", "2019-09-18 15:00:00");
+//		reqInfoDatas.put("srcNum", "123456");
+        ResponseBean responseBean = HttpUtils.sendHttp(30001, userId, null, reqInfoDatas);
+        System.out.println(responseBean);
+        if(responseBean.isSuccess()){
+            Map dataMap = responseBean.getDataMap();
+            if((Boolean) dataMap.get("isSuccess")){
+                return ResultInfo.getSuccessInfo();
+            }
+            return ResultInfo.getFailInfo(ResultEnum.REMOTE_REQUEST_ERR.getCode(), dataMap.get("msg").toString());
+        }
+        return ResultInfo.getFailInfo(333, "获取验证码错误");
+    }
+
+    public ResultInfo getValidCode(String userId, String mobile, String id, String imgCode) {
+
+        if(StringUtils.isEmpty(id) || StringUtils.isEmpty(imgCode)) {
+            return ResultInfo.getFailInfo(ResultEnum.IMG_CODE_EMPTY);
+        }
+
         if(StringUtils.isEmpty(mobile)){
             return ResultInfo.getFailInfo(ResultEnum.USER_MOBILE_EMPTY);
         }
